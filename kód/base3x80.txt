@@ -1,0 +1,25 @@
+Model accuracy on 10000 test images: 57.47%
+
+
+fix lr
+egy réteg boxconv
+20 epoch
+1réteg fcnn
+3*80 kernel
+
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = BoxConv2d(3, 80, 32, 32)
+        self.conv1_1x1 = nn.Conv2d(240, 240, 1, 1)
+
+        self.fc1 = nn.Linear(8*8*240, 10)
+
+    def forward(self, x):
+        x = self.conv1_1x1(self.conv1(x))
+        x = F.relu(F.max_pool2d(x, 4))
+
+        x = self.fc1(x.view(-1, 8*8*240))
+        return F.log_softmax(x, dim=1)

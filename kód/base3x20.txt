@@ -1,0 +1,38 @@
+Model accuracy on 10000 test images: 58.34%
+Category   - Accuracy
+plane      - 62.7
+car        - 62.5
+bird       - 46.3
+cat        - 55.3
+deer       - 40.7
+dog        - 34.9
+frog       - 76.2
+horse      - 64.4
+ship       - 71.6
+truck      - 68.8
+
+
+
+
+fix lr
+egy réteg boxconv
+20 epoch
+1réteg fcnn
+3*20 kernel
+
+
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = BoxConv2d(3, 20, 32, 32)
+        self.conv1_1x1 = nn.Conv2d(60, 60, 1, 1)
+
+        self.fc1 = nn.Linear(8*8*60, 10)
+
+    def forward(self, x):
+        x = self.conv1_1x1(self.conv1(x))
+        x = F.relu(F.max_pool2d(x, 4))
+
+        x = self.fc1(x.view(-1, 8*8*60))
+        return F.log_softmax(x, dim=1)
